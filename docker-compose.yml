@@ -1,0 +1,21 @@
+version: '3'
+
+services: 
+
+    mirror:
+        build: .
+        command: bash -c "apt-mirror && bash /apt-mirror/postmirror.sh"
+        volumes:
+            - "./mirror:/opt/spool/apt-mirror"
+
+    server:
+        build:
+            context: .
+            dockerfile: nginx.Dockerfile
+        restart: always
+        command: [nginx-debug, '-g', 'daemon off;']
+        volumes:
+            - "./mirror/mirror:/mirror:ro"
+        ports:
+            - "80:80"
+              #- "8080:80"
